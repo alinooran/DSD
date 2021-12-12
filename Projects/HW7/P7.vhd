@@ -110,13 +110,27 @@ BEGIN
 				END CASE;
 			WHEN T1 =>
 				CASE opcode IS
-					WHEN "0011" => func <= "011"; acc_ld <= '1'; next_state <= T0;
-					WHEN "0100" => func <= "100"; acc_ld <= '1'; next_state <= T0;
-					WHEN "0101" => func <= "000"; acc_ld <= '1'; next_state <= T0;
-					WHEN "0111" => sel <= "10"; d_ld <= '1'; next_state <= T2;
-					WHEN "1000" => sel <= "01"; a_ld <= '1'; next_state <= T2;
-					WHEN "1001" => func <= "100"; acc_ld <= '1'; next_state <= T2;
-					WHEN OTHERS => func <= "110"; acc_ld <= '1'; next_state <= T2;
+					WHEN "0011" => func <= "011";
+						acc_ld <= '1';
+						next_state <= T0;
+					WHEN "0100" => func <= "100";
+						acc_ld <= '1';
+						next_state <= T0;
+					WHEN "0101" => func <= "000";
+						acc_ld <= '1';
+						next_state <= T0;
+					WHEN "0111" => sel <= "10";
+						d_ld <= '1';
+						next_state <= T2;
+					WHEN "1000" => sel <= "01";
+						a_ld <= '1';
+						next_state <= T2;
+					WHEN "1001" => func <= "100";
+						acc_ld <= '1';
+						next_state <= T2;
+					WHEN OTHERS => func <= "110";
+						acc_ld <= '1';
+						next_state <= T2;
 				END CASE;
 			WHEN T2 =>
 				CASE opcode IS
