@@ -147,6 +147,33 @@ BEGIN
 						wr <= '1';
 						next_state <= T0;
 				END CASE;
+			WHEN T3 =>
+				CASE opcode IS
+					WHEN "0111" => sel <= "01";
+						a_ld <= '1';
+						next_state <= T4;
+					WHEN OTHERS => sel <= "00";
+						a_ld <= '1';
+						next_state <= T4;
+				END CASE;
+			WHEN T4 =>
+				CASE opcode IS
+					WHEN "0111" => sel <= "10";
+						c_ld <= '1';
+						next_state <= T5;
+					WHEN OTHERS => sel <= "10";
+						c_ld <= '1';
+						next_state <= T5;
+				END CASE;
+			WHEN T5 =>
+				CASE opcode IS
+					WHEN "0111" => func <= "010";
+						acc_ld <= '1';
+						next_state <= T0;
+					WHEN OTHERS => func <= "101";
+						acc_ld <= '1';
+						next_state <= T0;
+				END CASE;
 		END CASE;
 	END PROCESS controlpath;
 	datapath : PROCESS (clk)
