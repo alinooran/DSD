@@ -9,16 +9,19 @@ ENTITY miniproc IS
 END miniproc; 
 ARCHITECTURE behavioral OF miniproc IS
     TYPE state IS (T0, T1, T2, T3);
-	SIGNAL cur_state, nxt_state : state;
+	SIGNAL current_state, next_state : state;
 	-- Control signals
 	SIGNAL a_ld 	: std_logic;
 	SIGNAL b_ld 	: std_logic;
-	SIGNAL x_ld 	: std_logic;
-	SIGNAL y_ld 	: std_logic;
+	SIGNAL c_ld 	: std_logic;
+	SIGNAL d_ld 	: std_logic;
 	SIGNAL acc_ld 	: std_logic;
 	SIGNAL cbus : std_logic_vector(31 DOWNTO 0);
-	SIGNAL sel 	: std_logic;
+	SIGNAL sel 	: std_logic_vector(1 DOWNTO 0);
 	SIGNAL func : std_logic_vector(1 DOWNTO 0);
+
+    -- memory out
+    SIGNAL memOut;
 	
     -- ALU out
 	SIGNAL Z 	: std_logic_vector(31 DOWNTO 0);
@@ -30,11 +33,25 @@ ARCHITECTURE behavioral OF miniproc IS
 	SIGNAL D 	: std_logic_vector(31 DOWNTO 0);
 	SIGNAL ACC 	: std_logic_vector(31 DOWNTO 0);
 
+    COMPONENT memory IS 
+        PORT (
+            clk     :    IN std_logic;
+            din     :    IN std_logic_vector(31 downto 0);
+            addr    :    IN std_logic_vector(5 downto 0);
+            wr      :    IN std_logic;
+            dout    :    OUT std_logic_vector(31 downto 0)
+        );
+    END COMPONENT;
+
 BEGIN
 
+    -- memory instance
+    mem : memory PORT MAP(clk, cbus, A, wr, memOut);
+
     -- bus mux
-	cbus <= B WHEN sel = "0" ELSE
-			ACC;
+	cbus <= B       WHEN sel = "00" ELSE
+			ACC     WHEN sel = "01" ELSE
+            memOut;
 			
 	z   <= 	X + Y WHEN func = "00" ELSE
 			Y	  WHEN func = "01" ELSE
@@ -53,6 +70,13 @@ BEGIN
 					WHEN "00"	=>	sel <= "01"; a_ld <= '1'; nxt_state <= T0;
 					WHEN "01"   =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
 					WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
+                    WHEN "00"	=>	sel <= "01"; a_ld <= '1'; nxt_state <= T0;
+					WHEN "01"   =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
+					WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
+                    WHEN "00"	=>	sel <= "01"; a_ld <= '1'; nxt_state <= T0;
+					WHEN "01"   =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
+					WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
+                    WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
 					WHEN OTHERS =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
 				END CASE;
 			WHEN T1 =>
