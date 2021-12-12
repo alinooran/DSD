@@ -1,6 +1,8 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.std_logic_unsigned.ALL;
+USE IEEE.std_logic_arith.ALL;
+
 ENTITY miniproc IS 
     PORT (
         clk, nrst   : IN    std_logic;
@@ -8,7 +10,7 @@ ENTITY miniproc IS
     );
 END miniproc; 
 ARCHITECTURE behavioral OF miniproc IS
-    TYPE state IS (T0, T1, T2, T3);
+    TYPE state IS (T0, T1, T2, T3, T4, T5);
 	SIGNAL current_state, next_state : state;
 	-- Control signals
 	SIGNAL a_ld 	: std_logic;
@@ -16,9 +18,10 @@ ARCHITECTURE behavioral OF miniproc IS
 	SIGNAL c_ld 	: std_logic;
 	SIGNAL d_ld 	: std_logic;
 	SIGNAL acc_ld 	: std_logic;
+	SIGNAL wr 	: std_logic;
 	SIGNAL cbus : std_logic_vector(31 DOWNTO 0);
 	SIGNAL sel 	: std_logic_vector(1 DOWNTO 0);
-	SIGNAL func : std_logic_vector(1 DOWNTO 0);
+	SIGNAL func : std_logic_vector(2 DOWNTO 0);
 
     -- memory out
     SIGNAL memOut;
@@ -53,31 +56,37 @@ BEGIN
 			ACC     WHEN sel = "01" ELSE
             memOut;
 			
-	z   <= 	X + Y WHEN func = "00" ELSE
-			Y	  WHEN func = "01" ELSE
-			Y;
+	z   <= 	C 		WHEN func = "000" ELSE
+			D 		WHEN func = "001" ELSE 
+			C + D   WHEN func = "010" ELSE
+			C AND D WHEN func = "011" ELSE
+			C XOR D WHEN func = "100" ELSE 
+			C - D   WHEN func = "101";
+
 			
-    controlpath: PROCESS (cur_state, opcode)
+    controlpath: PROCESS (current_state, opcode)
     BEGIN
 		a_ld <= '0';
 		b_ld <= '0';
-		x_ld <= '0';
-		y_ld <= '0';
+		c_ld <= '0';
+		d_ld <= '0';
 		acc_ld <= '0';
-		CASE cur_state is
+		func <= "000";
+		wr <= '0';
+		CASE current_state is
 			WHEN T0 =>
 				CASE opcode IS
-					WHEN "00"	=>	sel <= "01"; a_ld <= '1'; nxt_state <= T0;
-					WHEN "01"   =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
-					WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
-                    WHEN "00"	=>	sel <= "01"; a_ld <= '1'; nxt_state <= T0;
-					WHEN "01"   =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
-					WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
-                    WHEN "00"	=>	sel <= "01"; a_ld <= '1'; nxt_state <= T0;
-					WHEN "01"   =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
-					WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
-                    WHEN "10"   =>  sel <= "10"; b_ld <= '1'; nxt_state <= T0;
-					WHEN OTHERS =>	sel <= "00"; x_ld <= '1'; nxt_state <= T1;
+					WHEN "0000"	  => func <= "000"; acc_ld <= '1'; next_state <= T0;
+					WHEN "0001"   => func <= "001"; acc_ld <= '1'; next_state <= T0;
+					WHEN "0010"   => func <= "010"; acc_ld <= '1'; next_state <= T0;  
+                    WHEN "0011"   => sel <= "00"; d_ld <= '1'; next_state <= T1;	
+					WHEN "0100"   => sel <= "00"; d_ld <= '1'; next_state <= T1;	
+					WHEN "0101"   => sel <= "10"; c_ld <= '1'; next_state <= T1;
+                    WHEN "0110"	  => sel <= "01"; wr <= '1'; next_state <= T0;
+					WHEN "0111"   => sel <= "00"; a_ld <= '1'; next_state <= T1;	
+					WHEN "1000"   => func <= "000"; acc_ld <= '1'; next_state <= T1;  
+                    WHEN "1001"   => sel <= "00"; d_ld <= '1'; next_state <= T1; 
+					WHEN OTHERS   => sel <= "00"; d_ld <= '1'; next_state <= T1;	
 				END CASE;
 			WHEN T1 =>
 				CASE opcode IS
