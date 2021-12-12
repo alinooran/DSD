@@ -176,29 +176,30 @@ BEGIN
 				END CASE;
 		END CASE;
 	END PROCESS controlpath;
+
+
 	datapath : PROCESS (clk)
 	BEGIN
 		IF clk = '1' THEN
 			IF nrst = '0' THEN
-				cur_state <= T0;
-				B <= X"00000001";
+				current_state <= T0;
 			ELSE
 				IF a_ld = '1' THEN
-					A <= cbus;
+					A <= cbus(5 DOWNTO 0);
 				END IF;
 				IF b_ld = '1' THEN
 					B <= cbus;
 				END IF;
-				IF x_ld = '1' THEN
-					X <= cbus;
+				IF c_ld = '1' THEN
+					C <= cbus;
 				END IF;
-				IF y_ld = '1' THEN
-					Y <= cbus;
+				IF d_ld = '1' THEN
+					D <= cbus;
 				END IF;
 				IF acc_ld = '1' THEN
 					ACC <= z;
 				END IF;
-				cur_state <= nxt_state;
+				current_state <= next_state;
 			END IF;
 		END IF;
 	END PROCESS datapath;
