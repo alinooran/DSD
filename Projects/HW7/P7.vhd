@@ -134,19 +134,19 @@ BEGIN
 				END CASE;
 			WHEN T2 =>
 				CASE opcode IS
-					WHEN "01" => func <= "00";
+					WHEN "0111" => func <= "000";
 						acc_ld <= '1';
-						nxt_state <= T0;
-					WHEN OTHERS => func <= "00";
-						acc_ld <= '1';
-						nxt_state <= T2;
+						next_state <= T3;
+					WHEN "1000" => sel <= "10";
+						d_ld <= '1';
+						next_state <= T3;
+					WHEN "1001" => sel <= "01";
+						wr <= '1';
+						next_state <= T0;
+					WHEN OTHERS => sel <= "01";
+						wr <= '1';
+						next_state <= T0;
 				END CASE;
-				nxt_state <= T3;
-			WHEN OTHERS =>
-				sel <= "10";
-				a_ld <= '1';
-				nxt_state <= T0;
-				nxt_state <= T0;
 		END CASE;
 	END PROCESS controlpath;
 	datapath : PROCESS (clk)
