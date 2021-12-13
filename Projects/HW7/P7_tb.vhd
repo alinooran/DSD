@@ -2,6 +2,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
 USE work.ALL;
+USE work.my_pack.ALL;
 
 ENTITY P7_tb IS
 END P7_tb;
