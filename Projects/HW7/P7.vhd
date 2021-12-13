@@ -33,10 +33,10 @@ ARCHITECTURE behavioral OF miniproc IS
 	SIGNAL Z : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 	-- Registers
-	SIGNAL A : STD_LOGIC_VECTOR(5 DOWNTO 0);
-	SIGNAL B : STD_LOGIC_VECTOR(31 DOWNTO 0);
-	SIGNAL C : STD_LOGIC_VECTOR(31 DOWNTO 0);
-	SIGNAL D : STD_LOGIC_VECTOR(31 DOWNTO 0);
+	SIGNAL A : STD_LOGIC_VECTOR(5 DOWNTO 0) := "001100";
+	SIGNAL B : STD_LOGIC_VECTOR(31 DOWNTO 0) := X"00010001";
+	SIGNAL C : STD_LOGIC_VECTOR(31 DOWNTO 0) := X"00000003";
+	SIGNAL D : STD_LOGIC_VECTOR(31 DOWNTO 0) := X"00000020";
 	SIGNAL ACC : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 	COMPONENT sram IS
@@ -120,9 +120,10 @@ BEGIN
 					WHEN "1001" => sel <= "00";
 						d_ld <= '1';
 						next_state <= T1;
-					WHEN OTHERS => sel <= "00";
+					WHEN "1010" => sel <= "00";
 						d_ld <= '1';
 						next_state <= T1;
+					WHEN OTHERS => next_state <= T0;
 				END CASE;
 			WHEN T1 =>
 				CASE opcode IS
@@ -144,9 +145,10 @@ BEGIN
 					WHEN "1001" => func <= "100";
 						acc_ld <= '1';
 						next_state <= T2;
-					WHEN OTHERS => func <= "110";
+					WHEN "1010" => func <= "110";
 						acc_ld <= '1';
 						next_state <= T2;
+					WHEN OTHERS => next_state <= T0;
 				END CASE;
 			WHEN T2 =>
 				CASE opcode IS
@@ -159,43 +161,47 @@ BEGIN
 					WHEN "1001" => sel <= "01";
 						wr <= '1';
 						next_state <= T0;
-					WHEN OTHERS => sel <= "01";
+					WHEN "1010" => sel <= "01";
 						wr <= '1';
 						next_state <= T0;
+					WHEN OTHERS => next_state <= T0;
 				END CASE;
 			WHEN T3 =>
 				CASE opcode IS
 					WHEN "0111" => sel <= "01";
 						a_ld <= '1';
 						next_state <= T4;
-					WHEN OTHERS => sel <= "00";
+					WHEN "1000" => sel <= "00";
 						a_ld <= '1';
 						next_state <= T4;
+					WHEN OTHERS => next_state <= T0;
 				END CASE;
 			WHEN T4 =>
 				CASE opcode IS
 					WHEN "0111" => sel <= "10";
 						c_ld <= '1';
 						next_state <= T5;
-					WHEN OTHERS => sel <= "10";
+					WHEN "1000" => sel <= "10";
 						c_ld <= '1';
 						next_state <= T5;
+					WHEN OTHERS => next_state <= T0;
 				END CASE;
 			WHEN T5 =>
 				CASE opcode IS
 					WHEN "0111" => func <= "010";
 						acc_ld <= '1';
 						next_state <= T0;
-					WHEN OTHERS => func <= "101";
+					WHEN "1000" => func <= "101";
 						acc_ld <= '1';
 						next_state <= T0;
+					WHEN OTHERS => next_state <= T0;
 				END CASE;
 		END CASE;
 	END PROCESS controlpath;
 	datapath : PROCESS (clk)
 	BEGIN
 		IF clk = '1' THEN
-			IF nrst = '0' THEN
+			IF nrst = '1' THEN
 				current_state <= T0;
 			ELSE
 				IF a_ld = '1' THEN
