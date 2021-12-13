@@ -17,7 +17,7 @@ BEGIN
         VARIABLE x : INTEGER RANGE 0 TO 31;
     BEGIN
         x := to_integer(unsigned(b));
-        c := (31 downto 0);
+        c := a;
         while x > 0 LOOP 
             c := c(30 downto 0) & '0';
             x := x - 1;

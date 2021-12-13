@@ -27,7 +27,7 @@ ARCHITECTURE behavioral OF miniproc IS
 	SIGNAL memOut : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 	-- shifter result
-	SIGNAL res : STD_LOGIC_VECTOR(31 DOWNTO 0)
+	SIGNAL res : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 	-- ALU out
 	SIGNAL Z : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -70,7 +70,7 @@ BEGIN
 		ACC WHEN sel = "01" ELSE
 		memOut;
 
-	z <= C WHEN func = "000" ELSE
+	Z <= C WHEN func = "000" ELSE
 		D WHEN func = "001" ELSE
 		C + D WHEN func = "010" ELSE
 		C AND D WHEN func = "011" ELSE
