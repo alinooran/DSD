@@ -14,8 +14,6 @@ ARCHITECTURE test OF P7_tb IS
 	    );
     END COMPONENT;
 
-    --SIGNAL rst, motor_up, motor_down, elevator_state : std_logic;
-    --SIGNAL come, cf, switch, current_floor : std_logic_vector(3 downto 0);
     SIGNAL opcode : std_logic_vector(3 downto 0);
     SIGNAL clk : std_logic := '0';
     SIGNAL nrst : std_logic;
@@ -23,9 +21,11 @@ ARCHITECTURE test OF P7_tb IS
 BEGIN 
 
     clk <= NOT clk AFTER 5 ns;
-    --read_test_vector_from_file(PERIOD, rst, cf, come, switch);
+    
+    read_test_vector_from_file(PERIOD, opcode, nrst);
+
     UUT: miniproc PORT MAP(clk, nrst, opcode);
-    nrst <= '1', '0' after 10 ns;
-    opcode <= "0010" after 20 ns, "0110" after 30 ns, "0111" after 40 ns;
+    
+
 
 END test;
