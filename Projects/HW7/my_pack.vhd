@@ -26,7 +26,7 @@ PACKAGE BODY my_pack IS
       
        WHILE ( NOT ENDFILE(fp) ) LOOP
 
-            -- Read rst
+            -- Read nrst
             READ(fp, c);
             IF c = '0' THEN
                 nrst <= TRANSPORT '0' AFTER current_time;
