@@ -1,7 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.std_logic_unsigned.ALL;
-USE IEEE.std_logic_arith.ALL;
+USE work.ALL;
 
 ENTITY miniproc IS
 	PORT (
@@ -24,7 +24,10 @@ ARCHITECTURE behavioral OF miniproc IS
 	SIGNAL func : STD_LOGIC_VECTOR(2 DOWNTO 0);
 
 	-- memory out
-	SIGNAL memOut;
+	SIGNAL memOut : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+	-- shifter result
+	SIGNAL res : STD_LOGIC_VECTOR(31 DOWNTO 0)
 
 	-- ALU out
 	SIGNAL Z : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -36,7 +39,7 @@ ARCHITECTURE behavioral OF miniproc IS
 	SIGNAL D : STD_LOGIC_VECTOR(31 DOWNTO 0);
 	SIGNAL ACC : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-	COMPONENT memory IS
+	COMPONENT sram IS
 		PORT (
 			clk : IN STD_LOGIC;
 			din : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -46,10 +49,21 @@ ARCHITECTURE behavioral OF miniproc IS
 		);
 	END COMPONENT;
 
+	COMPONENT shifter IS
+		PORT (
+			a : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+			b : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+			res : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+		);
+	END COMPONENT;
+
 BEGIN
 
 	-- memory instance
-	mem : memory PORT MAP(clk, cbus, A, wr, memOut);
+	mem : sram PORT MAP(clk, cbus, A, wr, memOut);
+
+	-- shifter instance
+	sh : shifter PORT MAP(D, C(4 DOWNTO 0), res);
 
 	-- bus mux
 	cbus <= B WHEN sel = "00" ELSE
@@ -61,7 +75,9 @@ BEGIN
 		C + D WHEN func = "010" ELSE
 		C AND D WHEN func = "011" ELSE
 		C XOR D WHEN func = "100" ELSE
-		C - D WHEN func = "101";
+		C - D WHEN func = "101" ELSE
+		res;
+
 	controlpath : PROCESS (current_state, opcode)
 	BEGIN
 		a_ld <= '0';
@@ -176,8 +192,6 @@ BEGIN
 				END CASE;
 		END CASE;
 	END PROCESS controlpath;
-
-
 	datapath : PROCESS (clk)
 	BEGIN
 		IF clk = '1' THEN
