@@ -3,7 +3,7 @@ USE IEEE.std_logic_1164.ALL;
 USE IEEE.std_logic_unsigned.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY shifter IS
+ENTITY UART IS
   PORT(
         start       : IN std_logic;
         clk         : IN std_logic;
@@ -15,9 +15,11 @@ ENTITY shifter IS
         data_ready  : OUT std_logic;
         data_outt   : OUT std_logic_vector(7 downto 0)
 	);
-END shifter;
-ARCHITECTURE shifter OF shifter IS
-    SIGNAL new_clk  :   std_logic   := '0';
+END UART;
+ARCHITECTURE uart OF UART IS
+    SIGNAL new_clk     :   std_logic   := '0';
+    SIGNAL start_reg   :   std_logic   := '0';
+    SIGNAL data_in_reg : std_logic_vector(7 downto 0)   := (OTHERS => '0');
 BEGIN
     PROCESS (clk)
         VARIABLE counter : INTEGER RANGE 0 TO 256 := 0;
@@ -33,6 +35,13 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-END shifter;
+
+
+    --- P2S
+    PROCESS()
+    BEGIN 
+
+    END PROCESS;
+END uart;
 		
 
