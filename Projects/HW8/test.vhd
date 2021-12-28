@@ -40,6 +40,8 @@ BEGIN
     start <= '1' after 20 ns, '0' after 30 ns;
     data_in <= "10011010" after 20 ns, "00000000" after 30 ns;
     baud <= "00000100";
+    rx <= '1', '0' after 20 ns, '0' after 60 ns, '1' after 100 ns, '0' after 140 ns, '1' after 180 ns,
+     '0' after 220 ns, '0' after 260 ns, '0' after 300 ns, '0' after 340 ns, '1' after 360 ns;
     
 
 
