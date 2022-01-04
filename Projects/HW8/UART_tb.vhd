@@ -37,11 +37,15 @@ BEGIN
     UUT: UART PORT MAP(start, clk, rst, rx, data_in, baud, tx, data_ready, data_out);
     
     rst <= '1', '0' after 10 ns;
+
     start <= '1' after 20 ns, '0' after 30 ns;
-    data_in <= "10011010" after 20 ns, "00000000" after 30 ns;
-    baud <= "00000100";
-    rx <= '1', '0' after 20 ns, '0' after 60 ns, '1' after 100 ns, '0' after 140 ns, '1' after 180 ns,
-     '0' after 220 ns, '0' after 260 ns, '0' after 300 ns, '0' after 340 ns, '1' after 360 ns;
+
+    data_in <= "00010101" after 20 ns, "00000000" after 30 ns;
+
+    baud <= "00000010";
+
+    rx <= '1', '0' after 20 ns, '0' after 40 ns, '1' after 60 ns, '0' after 80 ns, '1' after 100 ns,
+     '0' after 120 ns, '0' after 140 ns, '0' after 160 ns, '0' after 180 ns, '1' after 200 ns;
     
 
 
