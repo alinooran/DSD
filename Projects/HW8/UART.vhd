@@ -57,11 +57,13 @@ BEGIN
                         IF (counter = 9) THEN
                             start_reg := '0';
                             counter := 0;
-                            tx <= '1';
+                            --tx <= '1';
                             data_in_reg := (OTHERS => '0');
                         END IF;
                         baud_counter := 0;
                     END IF;
+		ELSE
+			tx <= '1';
                 END IF;
             END IF;
         END IF;
