@@ -3,8 +3,8 @@ USE ieee.std_logic_1164.ALL;
 
 ENTITY S7 IS
     PORT (
-    x  : IN  std_logic_vector(6 DOWNTO 0);
-    y  : OUT std_logic_vector(6 DOWNTO 0)
+        x  : IN  std_logic_vector(6 DOWNTO 0);
+        y  : OUT std_logic_vector(6 DOWNTO 0)
     );
 END S7;
 
