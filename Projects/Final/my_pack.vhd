@@ -2,6 +2,8 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 PACKAGE my_pack IS 
 
+    TYPE key_array IS ARRAY(0 TO 7) OF std_logic_vector(15 downto 0);
+
     -- FL() declaration
     FUNCTION FL (inp, KLi1, KLi2 : std_logic_vector) RETURN std_logic_vector;
 
@@ -10,6 +12,9 @@ PACKAGE my_pack IS
 
     -- S9 declaration
     FUNCTION S9 (x : std_logic_vector) RETURN std_logic_vector;
+
+    -- FI() declaration
+    FUNCTION FI (inp, subkey : std_logic_vector) RETURN std_logic_vector;
 END my_pack;
 
 PACKAGE BODY my_pack IS 
@@ -92,4 +97,21 @@ PACKAGE BODY my_pack IS
 
         RETURN y;
     END S9;
+
+    -- FI() body
+    FUNCTION FI (inp, subkey : std_logic_vector) RETURN std_logic_vector IS 
+        VARIABLE nine, seven    :   std_logic_vector(15 downto 0) := (OTHERS => '0');
+        VARIABLE outp           :   std_logic_vector(15 downto 0);
+    BEGIN 
+        nine  := "0000000" & inp(15 DOWNTO 7);
+        seven := "000000000" & inp(6 DOWNTO 0);
+        nine  := ("0000000" & S9(nine(8 DOWNTO 0))) XOR seven;
+        seven := "000000000" & (S7(seven(6 DOWNTO 0)) XOR nine(6 DOWNTO 0));
+        seven := seven XOR ("000000000" & subkey(15 DOWNTO 9));
+        nine  := nine XOR ("0000000" & subkey(8 DOWNTO 0));
+        nine  := ("0000000" & S9(nine(8 DOWNTO 0))) XOR seven;
+        seven := ("000000000" & S7(seven(6 DOWNTO 0))) XOR ("000000000" & nine(6 DOWNTO 0));
+        outp  := seven(6 DOWNTO 0) & nine(8 DOWNTO 0);
+        RETURN outp;
+    END FI;
 END my_pack;
