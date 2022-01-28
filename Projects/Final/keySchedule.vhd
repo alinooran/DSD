@@ -32,7 +32,42 @@ BEGIN
             kprime(i) := key(i) XOR C(i);
         END LOOP;
         FOR i IN 0 TO 7 LOOP
-            KLi1(i) := key(i)(14 DOWNTO 0) & '0'; 
+            KLi1(i) <= key(i)(14 DOWNTO 0) & '0'; 
+            IF (i + 2 > 7) THEN
+                KLi2(i) <= kprime(i + 2 - 8);
+            ELSE 
+                KLi2(i) <= kprime(i + 2);
+            END IF;
+            IF (i + 1 > 7) THEN
+                KOi1(i) <= (key(i + 1 - 8)(10 DOWNTO 0)) & (key(i + 1 - 8)(15 DOWNTO 11));
+            ELSE 
+                KOi1(i) <= (key(i + 1)(10 DOWNTO 0)) & (key(i + 1)(15 DOWNTO 11));
+            END IF;
+            IF (i + 5 > 7) THEN
+                KOi2(i) <= (key(i + 5 - 8)(7 DOWNTO 0)) & (key(i + 5 - 8)(15 DOWNTO 8));
+            ELSE 
+                KOi2(i) <= (key(i + 5)(7 DOWNTO 0)) & (key(i + 5)(15 DOWNTO 8));
+            END IF;
+            IF (i + 6 > 7) THEN
+                KOi3(i) <= (key(i + 6 - 8)(2 DOWNTO 0)) & (key(i + 6 - 8)(15 DOWNTO 3));
+            ELSE 
+                KOi3(i) <= (key(i + 6)(2 DOWNTO 0)) & (key(i + 6)(15 DOWNTO 3));
+            END IF;
+            IF (i + 4 > 7) THEN
+                KIi1(i) <= kprime(i + 4 - 8);
+            ELSE 
+                KIi1(i) <= kprime(i + 4);
+            END IF;
+            IF (i + 3 > 7) THEN
+                KIi2(i) <= kprime(i + 3 - 8);
+            ELSE 
+                KIi2(i) <= kprime(i + 3);
+            END IF;
+            IF (i + 7 > 7) THEN
+                KIi3(i) <= kprime(i + 7 - 8);
+            ELSE 
+                KIi3(i) <= kprime(i + 7);
+            END IF;
         END LOOP;
     END PROCESS;
 END ks;
