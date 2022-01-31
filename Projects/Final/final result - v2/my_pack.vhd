@@ -136,19 +136,22 @@ PACKAGE BODY my_pack IS
 
     -- FO() body
     FUNCTION FO (inp, KIi1, KIi2, KIi3, KOi1, KOi2, KOi3 : std_logic_vector) RETURN std_logic_vector IS 
-        VARIABLE left, right, left1, left2, left3, right1, right2, right3 :   std_logic_vector(15 downto 0);
-        VARIABLE tmp         :   std_logic_vector(31 downto 0);
+        VARIABLE left, right, left1, left2, left3, right1, right2, right3, tmp :   std_logic_vector(15 downto 0);
+        VARIABLE outp         :   std_logic_vector(31 downto 0);
     BEGIN 
         left  := inp(31 DOWNTO 16);
         right := inp(15 DOWNTO 0);
-        right1 := FI(left XOR KOi1, KIi1) XOR right;
+        tmp := left XOR KOi1;
+        right1 := FI(tmp, KIi1) XOR right;
         left1 := right;
-        right2 := FI (left1 XOR KOi2, KIi2) XOR right1;
+        tmp := left1 XOR KOi2;
+        right2 := FI(tmp, KIi2) XOR right1;
         left2 := right1;
-        right3 := FI(left2 XOR KOi3, KIi3) XOR right2;
+        tmp := left2 XOR KOi3;
+        right3 := FI(tmp, KIi3) XOR right2;
         left3 := right2;
-        tmp := left3 & right3;
-        RETURN tmp;
+        outp := left3 & right3;
+        RETURN outp;
     END FO;
 
     -- keySchedule body
@@ -177,7 +180,7 @@ PACKAGE BODY my_pack IS
         kprime(i) := key(i) XOR C(i);
     END LOOP;
     FOR i IN 0 TO 7 LOOP
-        KLi1(i) := key(i)(14 DOWNTO 0) & '0'; 
+        KLi1(i) := key(i)(14 DOWNTO 0) & key(i)(15); 
         IF (i + 2 > 7) THEN
             KLi2(i) := kprime(i + 2 - 8);
         ELSE 
